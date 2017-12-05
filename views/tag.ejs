@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Tag</title>
+    <link rel='stylesheet' href='/stylesheets/bootstrap.min.css' />
+    <script src="/javascripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        // To avoid the "protocol not supported" alert, fail must open another app.
+        window.onload = function() {
+            <% if (eventId) { %>
+                window.location = "glimpsable://t/<%= tagId %>";
+                var clickedAt = new Date();
+                // During tests on 3g/3gs this timeout fires immediately if less than 500ms.
+                setTimeout(function() {
+                    // To avoid failing on return to MobileSafari, ensure freshness!
+                    var now = new Date();
+                    if (now - clickedAt <= 600) {
+                        var ua = navigator.userAgent;
+                        var uaindex;
+
+                        // determine OS
+                        if (ua.match(/iPad/i) || ua.match(/iPod/i) || ua.match(/iPhone/i)) {
+                            userOS = 'iOS';
+                            uaindex = ua.indexOf('OS ');
+                        } else if (ua.match(/Android/i)) {
+                            userOS = 'Android';
+                            uaindex = ua.indexOf('Android ');
+                        } else {
+                            userOS = 'unknown';
+                        }
+
+                        // determine version
+                        if (userOS === 'iOS' && uaindex > -1) {
+                            userOSver = ua.substr(uaindex + 3, 3).replace('_', '.');
+                        } else if (userOS === 'Android' && uaindex > -1) {
+                            userOSver = ua.substr(uaindex + 8, 3);
+                        } else {
+                            userOSver = 'unknown';
+                        }
+
+                        if (userOS === 'iOS') {
+                            window.location = "itms-apps://itunes.apple.com/app/id795844313";
+                        } else {
+                            window.location = "http://glimpsable.com/e/<%= eventId %>";
+                        }
+                    }
+                }, 500);
+            <% } %>
+        };
+    </script>
+</head>
+
+<body class="container">
+    <% if (message.success) { %>
+        <div class="alert alert-success">
+            <%= message.success %>
+        </div>
+    <% } else if (message.error) { %>
+        <div class="alert alert-danger">
+            <%= message.error %>
+        </div>
+    <% } %>
+</body>
+
+</html>
